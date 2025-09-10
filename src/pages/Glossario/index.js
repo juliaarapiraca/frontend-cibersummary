@@ -4,28 +4,31 @@ import api from "../../services/api";
 function Glossario() {
   const [rows, setRows] = useState([]);
   const [filtro, setFiltro] = useState("");
+  const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [paginaAtual, setPaginaAtual] = useState(1);
 
+  const [paginaAtual, setPaginaAtual] = useState(1);
   const termosPorPagina = 20;
 
-  // Carrega termos do backend
-  const carregarTermos = async () => {
+  async function carregarTermos() {
     setLoading(true);
     try {
       const resposta = await api.get("/glossario");
-      console.log("Dados recebidos da API:", resposta.data);
+      console.log("Resposta completa da API:", resposta);
 
-      const termosFormatados = Array.isArray(resposta.data)
-        ? resposta.data.map(item => ({
-            termo: item.termo || "",
-            sigla: item.sigla || "",
-            significado: item.significado || "",
-            curso: item.curso || ""
-          }))
-        : [];
+      // Ajuste automático caso a API retorne { data: [...] } ou um array direto
+      const dados = Array.isArray(resposta.data) ? resposta.data : resposta.data?.data || [];
+
+      // Mapeia os campos para garantir compatibilidade com a tabela
+      const termosFormatados = dados.map(item => ({
+        termo: item.termo || item.name || "",
+        sigla: item.sigla || item.abrev || "",
+        significado: item.significado || item.desc || "",
+        curso: item.curso || ""
+      }));
 
       setRows(termosFormatados);
+      console.log("Termos carregados:", termosFormatados);
 
     } catch (error) {
       console.error("Erro ao carregar termos:", error);
@@ -33,23 +36,25 @@ function Glossario() {
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   useEffect(() => {
     carregarTermos();
   }, []);
 
-  // Filtra e pagina os termos
-  const termosFiltrados = rows.filter(item =>
-    [item.termo, item.sigla, item.significado, item.curso]
-      .some(campo => campo.toLowerCase().includes(filtro.toLowerCase()))
+  // Filtra os termos pelo input
+  const termosFiltrados = rows.filter(r =>
+    r.termo.toLowerCase().includes(filtro.toLowerCase()) ||
+    r.sigla.toLowerCase().includes(filtro.toLowerCase()) ||
+    r.significado.toLowerCase().includes(filtro.toLowerCase()) ||
+    r.curso.toLowerCase().includes(filtro.toLowerCase())
   );
 
+  // Paginação
+  const indexUltimoTermo = paginaAtual * termosPorPagina;
+  const indexPrimeiroTermo = indexUltimoTermo - termosPorPagina;
+  const termosPagina = termosFiltrados.slice(indexPrimeiroTermo, indexUltimoTermo);
   const totalPaginas = Math.ceil(termosFiltrados.length / termosPorPagina);
-  const termosPagina = termosFiltrados.slice(
-    (paginaAtual - 1) * termosPorPagina,
-    paginaAtual * termosPorPagina
-  );
 
   return (
     <div style={{ backgroundColor: "#FAF0E6", minHeight: "100vh" }}>
@@ -98,7 +103,7 @@ function Glossario() {
                   </li>
                   <li>
                     <a href="#" className="flex items-center w-full p-2 pl-11 rounded-lg hover:bg-blue-700">
-                      Conceitos Básicos de Redes
+                      Introdução a Redes
                     </a>
                   </li>
                   <li>
