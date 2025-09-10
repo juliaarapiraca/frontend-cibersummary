@@ -13,7 +13,7 @@ function Glossario() {
   const carregarTermos = async () => {
     setLoading(true);
     try {
-      const resposta = await api.get("/glossario");
+      const resposta = await api.get("https://backend-cibersummary.onrender.com/glossario");
       console.log("Dados recebidos da API:", resposta.data);
 
       const termosFormatados = Array.isArray(resposta.data)
