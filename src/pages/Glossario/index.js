@@ -103,7 +103,7 @@ function Glossario() {
                   </li>
                   <li>
                     <a href="#" className="flex items-center w-full p-2 pl-11 rounded-lg hover:bg-blue-700">
-                      Introdução a Redes
+                      Conceitos Básicos de Redes
                     </a>
                   </li>
                   <li>

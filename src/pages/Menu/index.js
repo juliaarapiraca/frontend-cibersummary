@@ -1,6 +1,6 @@
 function Menu() {
   return (
-    <div className="h-screen flex items-center justify-center bg-white" style={{ backgroundColor: "##FAF0E6" }}>
+    <div className="h-screen flex items-center justify-center" style={{ backgroundColor: "#FAF0E6" }}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-4xl w-full px-6">
         <a
           href="/glossario"
